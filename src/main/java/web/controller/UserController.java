@@ -7,7 +7,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
-import javax.validation.Valid;
 
 @Controller
 public class UserController {
@@ -37,7 +36,7 @@ public class UserController {
     }
 
     @PostMapping("/new")
-    public String add(@ModelAttribute("user") @Valid User user, BindingResult bindingResult) {
+    public String add(@ModelAttribute("user")  User user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "create";
         } else {
@@ -59,7 +58,7 @@ public class UserController {
     }
 
     @PatchMapping("/edit")
-    public String update(@Valid User user, BindingResult bindingResult) {
+    public String update( User user, BindingResult bindingResult) {
         if (bindingResult.hasErrors()) {
             return "edit";
         } else {
