@@ -8,7 +8,6 @@ import jakarta.persistence.PersistenceContext;
 import java.util.List;
 
 @Repository
-@Transactional
 public class UserDaoImpl implements UserDAO {
 
     @PersistenceContext
@@ -25,16 +24,19 @@ public class UserDaoImpl implements UserDAO {
     }
 
     @Override
+    @Transactional
     public void addUser(User user) {
         entityManager.persist(user);
     }
 
     @Override
+    @Transactional
     public void removeUser(long id) {
         entityManager.remove(getUserById(id));
     }
 
     @Override
+    @Transactional
     public void updateUser(User user) {
         entityManager.merge(user);
     }
