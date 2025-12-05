@@ -1,44 +1,60 @@
 package web.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-import web.dao.UserDAO;
+import web.dao.UserDao;
 import web.model.User;
 import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
 
-    private final UserDAO userDAO;
+    private final UserDao userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    public UserServiceImpl(UserDAO userDAO) {
-        this.userDAO = userDAO;
+    public UserServiceImpl(UserDao userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
-    public List<User> getAllUsers() {
-        return userDAO.getAllUsers();
-    }
-
-    @Override
-    public Object getUserById(long id) {
-        return userDAO.getUserById(id);
-    }
-
-    @Override
-    public void addUser(User user) {
-        userDAO.addUser(user);
-    }
-
-    @Override
-    public void removeUser(long id) {
-        userDAO.removeUser(id);
+    public void createUser(User user) {
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        userRepository.save(user);
     }
 
     @Override
     public void updateUser(User user) {
-        userDAO.updateUser(user);
+        User notUpdatedUser = findById(user.getId());
+
+        notUpdatedUser.setFirstName(user.getFirstName());
+        notUpdatedUser.setLastName(user.getLastName());
+        notUpdatedUser.setEmail(user.getEmail());
+        if(user.getPassword() != null && !user.getPassword().isBlank()) notUpdatedUser.setPassword(passwordEncoder.encode(user.getPassword()));
+        if(user.getBirthDay() != null) notUpdatedUser.setBirthDay(user.getBirthDay());
+        if(!user.getRoles().isEmpty()) notUpdatedUser.setRoles(user.getRoles());
+
+        userRepository.save(notUpdatedUser);
     }
+
+    @Override
+    public void deleteUserById(Long id) {
+        userRepository.deleteById(id);
+    }
+
+    @Override
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
+    }
+
+    @Override
+    public User findById(Long id) {
+        return userRepository.findById(id).orElse(null);
+    }
+
+    @Override
+    public User findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
 }

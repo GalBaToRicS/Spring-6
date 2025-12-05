@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Вход в систему</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+
+    .login-container {
+      background: white;
+      border-radius: 15px;
+      box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+      overflow: hidden;
+      width: 100%;
+      max-width: 400px;
+    }
+
+    .login-header {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 30px 20px;
+      text-align: center;
+    }
+
+    .login-header h1 {
+      font-size: 28px;
+      margin-bottom: 10px;
+      font-weight: 600;
+    }
+
+    .login-header p {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .login-form {
+      padding: 30px;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 8px;
+      color: #333;
+      font-weight: 500;
+      font-size: 14px;
+    }
+
+    .form-control {
+      width: 100%;
+      padding: 12px 15px;
+      border: 2px solid #e1e5e9;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: all 0.3s ease;
+      outline: none;
+    }
+
+    .form-control:focus {
+      border-color: #667eea;
+      box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+    }
+
+    .error-message {
+      background-color: #fee;
+      color: #c33;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+      font-size: 14px;
+      border: 1px solid #fcc;
+    }
+
+    .error-message.show {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .success-message {
+      background-color: #efffee;
+      color: #2a7;
+      padding: 12px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      display: none;
+      font-size: 14px;
+      border: 1px solid #cfc;
+    }
+
+    .success-message.show {
+      display: block;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .btn-login {
+      width: 100%;
+      padding: 14px;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s ease;
+      margin-top: 10px;
+    }
+
+    .btn-login:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 14px rgba(0,0,0,0.1);
+    }
+
+    .btn-login:active {
+      transform: translateY(0);
+    }
+
+    .form-footer {
+      text-align: center;
+      margin-top: 25px;
+      padding-top: 20px;
+      border-top: 1px solid #eee;
+    }
+
+    .form-footer a {
+      color: #667eea;
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.3s ease;
+    }
+
+    .form-footer a:hover {
+      color: #764ba2;
+      text-decoration: underline;
+    }
+
+    .password-toggle {
+      position: relative;
+    }
+
+    .toggle-password {
+      position: absolute;
+      right: 15px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      color: #999;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @media (max-width: 480px) {
+      .login-container {
+        border-radius: 10px;
+      }
+
+      .login-form {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="login-container">
+  <div class="login-header">
+    <h1>🔐 Авторизация</h1>
+    <p>Введите ваши учетные данные для входа в систему</p>
+  </div>
+
+  <div class="login-form">
+    <!-- Сообщение об ошибке -->
+    <div class="error-message" th:classappend="${param.error} ? 'show' : ''">
+      ⚠️ Неверный email или пароль. Пожалуйста, проверьте введенные данные.
+    </div>
+
+    <!-- Сообщение об успешном выходе -->
+    <div class="success-message" th:if="${param.logout}">
+      ✅ Вы успешно вышли из системы.
+    </div>
+
+    <!-- Форма входа -->
+    <form th:action="@{/login}" method="post">
+      <div class="form-group">
+        <label for="username">📧 Email адрес</label>
+        <input type="email"
+               id="username"
+               name="username"
+               class="form-control"
+               placeholder="example@mail.com"
+               required
+               th:value="${param.username}">
+      </div>
+
+      <div class="form-group password-toggle">
+        <label for="password">🔒 Пароль</label>
+        <input type="password"
+               id="password"
+               name="password"
+               class="form-control"
+               placeholder="Введите пароль"
+               required>
+        <button type="button" class="toggle-password" onclick="togglePassword()">
+          👁️ Показать
+        </button>
+      </div>
+
+      <button type="submit" class="btn-login">
+        🚀 Войти в систему
+      </button>
+    </form>
+
+    <div class="form-footer">
+      <a th:href="@{/}">← Вернуться на главную страницу</a>
+      <br>
+      <small style="color: #666; margin-top: 5px; display: block;">
+        © 2024 Система управления пользователями
+      </small>
+    </div>
+  </div>
+</div>
+
+<script>
+  function togglePassword() {
+    const passwordInput = document.getElementById('password');
+    const toggleButton = document.querySelector('.toggle-password');
+
+    if (passwordInput.type === 'password') {
+      passwordInput.type = 'text';
+      toggleButton.textContent = '🙈 Скрыть';
+    } else {
+      passwordInput.type = 'password';
+      toggleButton.textContent = '👁️ Показать';
+    }
+  }
+
+  // Автофокус на поле email
+  document.addEventListener('DOMContentLoaded', function() {
+    document.getElementById('username').focus();
+  });
+</script>
+</body>
+</html>
